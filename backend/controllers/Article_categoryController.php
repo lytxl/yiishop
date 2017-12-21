@@ -4,10 +4,10 @@ namespace backend\controllers;
 use yii\web\Controller;
 use backend\models\article_category;
 use yii\web\Request;
-
+//分类
 class Article_categoryController extends Controller{
     //首页
-        public function actionIndex(){
+    public function actionIndex(){
             //获取数据
           $form =  Article_category::find()->where(['>=','status',0])->all();
             return $this->render('index',['form'=>$form]);

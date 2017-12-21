@@ -38,13 +38,16 @@ $url=\yii\helpers\Url::to(['article_category/delete']);
 $js=<<<JS
         $('tr').on('click','.btn-primary',function() {
           var id=$(this).attr('id');
-          $(this).closest('tr').remove();
+          var result=confirm('是否删除');
+          if(result){
+                 $(this).closest('tr').remove();
           $.getJSON("$url?id="+id,function(data) {
             if(data){
                 alert("删除成功")
             }else{
                 alert("删除失败")
 }          })
+          }
         })
 JS;
 $this->registerJs($js);

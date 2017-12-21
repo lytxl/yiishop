@@ -16,7 +16,6 @@
             <td><img src="<?=$r->logo?>" width="50px"></td>
             <td><?=$r->sort?></td>
             <td>
-                <?=$r->status==-1?'删除':''?>
                 <?=$r->status==0?'隐藏':''?>
                 <?=$r->status==1?'正常':''?>
             </td>
@@ -40,12 +39,15 @@ $url=\yii\helpers\Url::to(['brand/delete']);
 $js=<<<JS
     $('tr').on('click','.btn-primary',function() {
       var id = $(this).attr('id');
-      $.getJSON("$url?id="+id,function(data) {
+      var result = confirm('是否删除');
+      if(result){
+          $(this).closest('tr').remove();
+          $.getJSON("$url?id="+id,function(data) {
         if(data){
-            alert('删出成功')
         }else{
             alert('删出失败')
 }      })
+      }
     });
 JS;
 $this->registerJs($js);
