@@ -55,9 +55,6 @@ echo <<<HTML
     <ul id="treeDemo" class="ztree"></ul>
 </div>
 HTML;
-
-
-
 //======================zTree=====================
 echo $form->field($countries,'intro')->textarea();
 echo '<button type="submit" class="btn btn-primary">提交</button>';

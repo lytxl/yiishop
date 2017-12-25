@@ -11,8 +11,7 @@ class GoodsCategoryController extends Controller
     //首页
     public function actionIndex()
     {
-        $result = GoodsCategory::find()->all();
-
+        $result = GoodsCategory::find()->orderBy('tree,lft')->all();
         return $this->render('index', ['result' => $result]);
     }
 
