@@ -9,6 +9,7 @@ use backend\models\GoodsGallery;
 use backend\models\GoodsInto;
 use Qiniu\Auth;
 use Qiniu\Storage\UploadManager;
+use yii\data\Pagination;
 use yii\helpers\Json;
 use yii\web\Controller;
 use yii\web\Request;
@@ -18,7 +19,28 @@ class GoodsController extends Controller{
     public $enableCsrfValidation=false;
     //首页显示
     public function actionIndex(){
-        $form=Goods::find()->all();
+        $name=\Yii::$app->request->get('name');
+        $sn=\Yii::$app->request->get('sn');
+        $minPrice=\Yii::$app->request->get('minPrice');
+        $maxPrice=\Yii::$app->request->get('maxPrice');
+        $query=Goods::find();
+        if($name){
+            $query->where(['like','name',$name]);
+        }
+        if ($sn){
+            $query->andWhere(['like','sn',$sn]);
+        }
+        if($minPrice){
+            $query->andWhere(['>','shop_price',$minPrice]);
+        }
+        if($maxPrice){
+            $query->andWhere(['<','shop_price',$maxPrice]);
+        }
+        $pager=new Pagination([
+            'totalCount'=>$query->count(),
+            'defaultPageSize'=>3
+        ]);
+        $form = $query->limit($pager->limit)->offset($pager->offset)->all();
         $barend=Brand::find()->all();
         $goods_category=GoodsCategory::find()->all();
         $v=[];
@@ -30,7 +52,7 @@ class GoodsController extends Controller{
             $f[$goods->id]=$goods->name;
         }
         return $this->render('index',['form'=>$form,'v'=>$v,'f'=>$f
-        ]);
+        ,'pager'=>$pager]);
     }
     //添加
     public function actionAdd(){
@@ -122,8 +144,8 @@ class GoodsController extends Controller{
     }
     //预览
     public function actionPreview($id){
-        $coutent=GoodsInto::find()->where(['goods_id'=>$id])->all();
-        $gallery=GoodsGallery::find()->where(['goods_id'=>$id])->one();
+        $coutent=GoodsInto::find()->where(['goods_id'=>$id])->one();
+        $gallery=GoodsGallery::find()->where(['goods_id'=>$id])->all();
         return $this->render('preview',['content'=>$coutent,'gallery'=>$gallery]);
     }
     //处理图片

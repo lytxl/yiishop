@@ -10,7 +10,8 @@ class GoodsCategory extends ActiveRecord
     public function rules()
     {
         return [
-            [['name', 'parent_id', 'intro'], 'required']
+            [['name','intro'], 'required'],
+            ['parent_id','validateId'],
         ];
     }
 
@@ -21,6 +22,18 @@ class GoodsCategory extends ActiveRecord
             'parent_id' => '上级分类id',
             'intro' => '简介'
         ];
+    }
+
+    public function validateId(){
+        $parent = GoodsCategory::findOne(['id' => $this->parent_id]);
+        //判断查询的结果是不是对象,如果不是对象就null 返回一个false
+        if(!is_object($parent)){
+            return false;
+        }else{
+            if($parent->isChildOf($this)){
+                $this->addError('parent_id','不能修改到自己的子孙下面');
+            }
+        }
     }
 
     public function behaviors()

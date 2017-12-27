@@ -41,24 +41,29 @@ class GoodsCategoryController extends Controller
     public function actionEdit($id)
     {
         $countries = GoodsCategory::find()->where(['id' => $id])->one();
+        $parent_id=$countries->parent_id;
         $request = new Request();
         if ($request->isPost) {
             $countries->load($request->post());
             if ($countries->validate()) {
                 if ($countries->parent_id) {
+                    //存在子就追加
                     $parent = GoodsCategory::findOne(['id' => $countries->parent_id]);
                     $countries->appendTo($parent);
                 } else {
-                    $countries->parent_id = 0;
-                    $countries->makeRoot();
+                    if($parent_id==0){
+                        //在根节点修改为跟节点时使用makeRoot就会报错
+                        $countries->save();
+                    }else{
+                        $countries->makeRoot();
+                    }
                 }
                 \Yii::$app->session->setFlash('success', '修改成功');
                 return $this->redirect(['goods-category/index']);
             }
         }
-        else {
-            return $this->render('add', ['countries' => $countries]);
-        }
+        return $this->render('add', ['countries' => $countries]);
+
     }
     //删除
     public function actionDelete($id){

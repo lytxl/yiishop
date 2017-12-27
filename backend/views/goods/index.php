@@ -1,3 +1,10 @@
+<form class="form-inline" action="" method="get" role="form">
+        <input type="text"  class="form-control" name="name" placeholder="商品名">
+        <input type="text"  class="form-control" name="sn" placeholder="货号">
+        商品价格范围:<input type="text" id="goodssearchform-minprice" class="form-control" name="minPrice" placeholder="最小￥">
+        ~
+        <input type="text" id="goodssearchform-maxprice" class="form-control" name="maxPrice" placeholder="最大￥">
+    <button type="submit" class="btn btn-default"><span class="glyphicon glyphicon-search"></span>搜索</button></form><table class="table table-bordered table-responsive">
 <table class="table table-bordered">
     <tr>
         <th>ID</th>
@@ -53,6 +60,10 @@
         </td>
     </tr>
 </table>
+<?=\yii\widgets\LinkPager::widget([
+        'pagination'=>$pager
+])
+?>
 <?php
 /**
  * @var $this yii\web\View
