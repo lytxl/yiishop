@@ -1,6 +1,7 @@
 <?php
 namespace backend\controllers;
 
+use backend\filters\RbacFilters;
 use yii\web\Controller;
 use backend\models\article_category;
 use yii\web\Request;
@@ -55,5 +56,14 @@ class Article_categoryController extends Controller{
         $model->status=-1;
         $data=$model->save(false);
         echo json_encode($data);
+    }
+    //权限
+    public function behaviors()
+    {
+        return [
+            'rbac'=>[
+                'class'=>RbacFilters::className()
+            ]
+        ];
     }
 }

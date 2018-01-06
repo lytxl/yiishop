@@ -7,6 +7,7 @@ use yii\web\IdentityInterface;
 class User extends ActiveRecord implements IdentityInterface {
     public $password;
     public $wornpwd;
+    public $jurisdiction;
     const SCENARIO_EDIT_USER ='edit.user';
     public function rules()
     {
@@ -14,7 +15,7 @@ class User extends ActiveRecord implements IdentityInterface {
             [['username','email','password_hash','password','status'],'required'],
             ['email','email'],
             ['password', 'compare', 'compareAttribute'=>'password_hash'],
-            ['wornpwd','default','value'=>null]
+            [['wornpwd','jurisdiction'],'default','value'=>null]
         ];
     }
     public function attributeLabels()
@@ -25,7 +26,8 @@ class User extends ActiveRecord implements IdentityInterface {
             'password_hash'=>'密码',
             'wornpwd'=>'旧密码',
             'password'=>'确认密码',
-            'status'=>'状态'
+            'status'=>'状态',
+            'jurisdiction'=>'角色'
         ];
     }
     //验证旧密码
@@ -40,7 +42,25 @@ class User extends ActiveRecord implements IdentityInterface {
         };
         return false;
     }
-
+ public function getMenus(){
+     $menuItems=[];
+     $menus=\backend\models\Menu::find()->where(['f_id'=>0])->all();
+     //遍历第一级菜单
+     foreach($menus as $menu){
+             $m=[];
+             //第二级菜单
+         $r=Menu::find()->where(['f_id'=>$menu->id])->all();
+             foreach($r as $me){
+                 if(\Yii::$app->user->can($me->route)){
+                     $m[]=['label'=>$me->name,'url'=>[$me->route]];
+                 }
+             }
+             if($m){
+                 $menuItems[]=['label'=>$menu->name,'items'=>$m];
+             }
+     }
+     return $menuItems;
+ }
 
     /**
      * Finds an identity by the given ID.

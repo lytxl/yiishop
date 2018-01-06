@@ -1,6 +1,7 @@
 <?php
 namespace backend\controllers;
 
+use backend\filters\RbacFilters;
 use backend\models\Brand;
 use yii\helpers\Json;
 use yii\web\Controller;
@@ -100,6 +101,15 @@ class BrandController extends Controller{
         }else{
             echo json_encode(false);
         }
+    }
+    //权限
+    public function behaviors()
+    {
+        return [
+            'rbac'=>[
+                'class'=>RbacFilters::className()
+            ]
+        ];
     }
 }
 

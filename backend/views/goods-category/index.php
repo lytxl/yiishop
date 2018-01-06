@@ -5,7 +5,7 @@
         <th>操作</th>
     </tr>
     <?php foreach($result as $r):?>
-        <tr style="text-align: center">
+        <tr>
             <td><?=$r->id?></td>
             <td><?=str_repeat('ㅡㅡ',$r->depth).$r->name?></td>
             <td>

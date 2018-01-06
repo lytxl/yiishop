@@ -1,6 +1,7 @@
 <?php
 namespace backend\controllers;
 
+use backend\filters\RbacFilters;
 use backend\models\Brand;
 use backend\models\Goods;
 use backend\models\GoodsCategory;
@@ -194,8 +195,8 @@ class GoodsController extends Controller{
                 'class' => 'common\widgets\ueditor\UeditorAction',
                 'config'=>[
                     //上传图片配置
-                    'imageUrlPrefix' => "", /* 图片访问路径前缀 */
-                    'imagePathFormat' => "/image/{yyyy}{mm}{dd}/{time}{rand:6}", /* 上传保存路径,可以自定义保存路径和文件名格式 */
+                    'imageUrlPrefix' => "http://admin.yiishop.com", /* 图片访问路径前缀 */
+                   /* 'imagePathFormat' => "/image/{yyyy}{mm}{dd}/{time}{rand:6}", /* 上传保存路径,可以自定义保存路径和文件名格式 */
                 ]
             ]
         ];
@@ -205,5 +206,14 @@ class GoodsController extends Controller{
         $result= Goods::deleteAll(['id'=>$id]);
         GoodsInto::deleteAll(['goods_id'=>$id]);
         echo json_encode($result);
+    }
+    //权限
+    public function behaviors()
+    {
+        return [
+            'rbac'=>[
+                'class'=>RbacFilters::className()
+            ]
+        ];
     }
 }

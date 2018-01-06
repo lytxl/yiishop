@@ -24,7 +24,6 @@
             <td><?=$f->last_login_ip?></td>
             <td>
                 <?=\yii\helpers\Html::button('删除',['class'=>'btn btn-info','id'=>$f->id])?>
-
                 <?=\yii\helpers\Html::a('修改',['user/edit','id'=>$f->id],['class'=>'btn btn-primary'])?>
             </td>
         </tr>

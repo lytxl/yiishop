@@ -1,6 +1,7 @@
 <?php
 namespace backend\controllers;
 
+use backend\filters\RbacFilters;
 use backend\models\GoodsCategory;
 use creocoder\nestedsets\NestedSetsBehavior;
 use yii\web\Controller;
@@ -18,6 +19,8 @@ class GoodsCategoryController extends Controller
     //添加
     public function actionAdd()
     {
+        $redis=new \Redis();
+        $redis->connect('127.0.0.1');
         $countries = new GoodsCategory();
         $request = new Request();
         if ($request->isPost) {
@@ -29,6 +32,7 @@ class GoodsCategoryController extends Controller
                 } else {
                     $countries->makeRoot();
                 }
+                $redis->del('goods_Category');
                 \Yii::$app->session->setFlash('success', '添加成功');
                 return $this->redirect(['goods-category/index']);
             }
@@ -40,6 +44,8 @@ class GoodsCategoryController extends Controller
     //修改
     public function actionEdit($id)
     {
+        $redis=new \Redis();
+        $redis->connect('127.0.0.1');
         $countries = GoodsCategory::find()->where(['id' => $id])->one();
         $parent_id=$countries->parent_id;
         $request = new Request();
@@ -58,6 +64,7 @@ class GoodsCategoryController extends Controller
                         $countries->makeRoot();
                     }
                 }
+                $redis->del('goods_Category');
                 \Yii::$app->session->setFlash('success', '修改成功');
                 return $this->redirect(['goods-category/index']);
             }
@@ -72,7 +79,20 @@ class GoodsCategoryController extends Controller
             echo json_encode(false);
         }else{
             //不存在就删除
+            $redis=new \Redis();
+            $redis->connect('127.0.0.1');
+            $redis->del('goods_Category');
            $r= GoodsCategory::deleteAll(['id'=>$id]);
             echo json_encode($r);
         }
-    }}
+    }
+    //权限
+    public function behaviors()
+    {
+        return [
+            'rbac'=>[
+                'class'=>RbacFilters::className()
+            ]
+        ];
+    }
+}

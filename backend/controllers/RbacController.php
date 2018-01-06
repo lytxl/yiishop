@@ -1,6 +1,7 @@
 <?php
 namespace backend\controllers;
 
+use backend\filters\RbacFilters;
 use backend\models\RbacForm;
 use backend\models\RoleForm;
 use yii\rbac\Permission;
@@ -122,6 +123,7 @@ class RbacController extends Controller{
         }
         //等到改用户的权限
         $perm=$auth->getChildren($name);
+//        $perm=$auth->getPermissionsByRole($name);或者这种
         $model->permission=[];
         foreach ($perm as $p){
             //因为页面上面的多选款的的键值对方式是$p->name=>$p->description 打印一下就知道
@@ -159,5 +161,14 @@ class RbacController extends Controller{
             \Yii::$app->session->setFlash('success','角色删除成功');
             return $this->redirect(['rbac/role-index']);
         }
+    }
+    //权限
+    public function behaviors()
+    {
+        return [
+            'rbac'=>[
+                'class'=>RbacFilters::className()
+            ]
+        ];
     }
 }

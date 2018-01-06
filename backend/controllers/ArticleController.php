@@ -1,6 +1,7 @@
 <?php
 namespace backend\controllers;
 
+use backend\filters\RbacFilters;
 use backend\models\Article;
 use backend\models\Article_category;
 use backend\models\Article_detail;
@@ -93,5 +94,14 @@ class ArticleController extends Controller{
             ]
         ]
     ];
+    }
+    //权限
+    public function behaviors()
+    {
+        return [
+            'rbac'=>[
+                'class'=>RbacFilters::className()
+            ]
+        ];
     }
 }

@@ -34,62 +34,24 @@ AppAsset::register($this);
             'class' => 'navbar-inverse navbar-fixed-top',
         ],
     ]);
-    $menuItems = [
+/*    $menuItems =
         [
-            'label'=>'管理员',
-            'items'=>[
-                ['label' => '管理员列表', 'url' =>['/user/index']],
-            ]
-        ],[
-            'label'=>'商品',
-            'items'=>[
-                ['label' => '商品列表', 'url' =>['/goods/index']],
-
-                ['label' => '添加商品', 'url' => ['/goods/add']],
-                ['label' => '商品分类', 'url' => ['/goods-category/index']],
-            ]
-        ],
         [
-            'label'=>'品牌',
-            'items'=>[
-                ['label' => '品牌列表', 'url' =>['/brand/index']],
-
-                ['label' => '添加商品', 'url' => ['/brand/add']],
-            ]
-        ],[
-            'label'=>'文章',
-            'items'=>[
-                ['label' => '文章', 'url' =>['/article/index']],
-
-                ['label' => '添加文章', 'url' => ['/article/add']],
-                ['label' => '分类列表', 'url' => ['/article_category/index']],
-                ['label' => '添加分类', 'url' => ['/article_category/add']],
-            ]
-        ],[
             'label'=>'个人中心',
             'items'=>[
                 ['label' => '修改个人信息', 'url' =>['/user/edit-one','id'=>\Yii::$app->user->id]],
             ]
-        ],[
-            'label'=>'管理用户和权限',
-            'items'=>[
-                ['label' => '权限列表', 'url' =>['/rbac/permission-index']],
-                ['label' => '权限添加', 'url' =>['/rbac/permission-add']],
-                ['label' => '角色列表', 'url' =>['/rbac/role-index']],
-                ['label' => '角色添加', 'url' =>['/rbac/role-add']],
-            ]
-        ],
-
-    ];
+        ];*/
+    $menuItems=[];
     if (Yii::$app->user->isGuest) {
         $menuItems[] = ['label' => '登录', 'url' => ['/login/index']];
     } else {
+        $menuItems=Yii::$app->user->identity->getMenus();
         $menuItems[] = '<li>'
             . Html::beginForm(['/login/index'], 'post')
             . Html::submitButton(
                 '注销 (' . Yii::$app->user->identity->username . ')',
                 ['class' => 'btn btn-link logout']
-
             )
             . Html::endForm()
             . '</li>';
