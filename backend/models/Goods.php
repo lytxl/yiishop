@@ -11,6 +11,7 @@ class Goods extends ActiveRecord{
             [['market_price','shop_price','stock',],'double']
         ];
     }
+
     public function attributeLabels()
     {
         return [
@@ -28,6 +29,7 @@ class Goods extends ActiveRecord{
             'view_times'=>'浏览次数',
         ];
     }
+
     public static function Goods(){
         $redis=new \Redis();
         $redis->connect('127.0.0.1');

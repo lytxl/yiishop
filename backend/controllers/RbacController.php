@@ -110,6 +110,7 @@ class RbacController extends Controller{
     public function actionRoleEdit($name)
     {
         //根据name获取到他的信息
+
         $model = new RoleForm();
         $model->scenario = RoleForm::SCENARIO_NAME_EDIT_ROLE;
         $auth=\Yii::$app->authManager;
@@ -126,25 +127,25 @@ class RbacController extends Controller{
 //        $perm=$auth->getPermissionsByRole($name);或者这种
         $model->permission=[];
         foreach ($perm as $p){
-            //因为页面上面的多选款的的键值对方式是$p->name=>$p->description 打印一下就知道
-            $model->permission[$p->description]=$p->name;
+            //因为页面上面的多选款的的键值对方式是$p->name 多选是以索引数组的方式不需要键
+            $model->permission[]=$p->name;
         }
         $request=new Request();
         if($request->isPost){
-            //在添加新的权限的时候要吧原来的权限删除
-            $auth->removeChildren($role);
             $model->load($request->post());
             //后端验证
             if($model->validate()){
-                $permission = new Role();
-                $permission->name=$model->name;
-                $permission->description=$model->description;
+
+                $role->name=$model->name;
+                $role->description=$model->description;
                 //角色修改
-                $auth->update($name,$permission);
+                $auth->update($name,$role);
                 //权限修改
+                //在添加新的权限的时候要吧原来的权限删除
+                $auth->removeChildren($role);
                 foreach($model->permission as $p){
-                    $name=$auth->getPermission($p);
-                    $auth->addChild($model,$name);
+                    $prmission=$auth->getPermission($p);
+                    $auth->addChild($role,$prmission);
                 }
                 \Yii::$app->session->setFlash('success','修改成功');
                 return $this->redirect(['rbac/role-index']);
