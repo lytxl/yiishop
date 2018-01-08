@@ -31,7 +31,7 @@ class Goods extends ActiveRecord{
     public static function Goods(){
         $redis=new \Redis();
         $redis->connect('127.0.0.1');
-        $html=$redis->get('goods_Category');
+        $html=$redis->get('GoodsCategory');
         if($html==false){
             $category1=GoodsCategory::find()->where(['depth'=>0])->all();//一级分类
             foreach($category1 as $k1=>$category){
@@ -53,7 +53,7 @@ class Goods extends ActiveRecord{
                 $html.=' </div>';
                 $html.=' </div>';
             }
-            $redis->set('goods_Category',$html,24*3600);
+            $redis->set('GoodsCategory',$html,24*3600);
         }
         return $html;
     }
