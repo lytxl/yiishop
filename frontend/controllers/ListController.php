@@ -280,7 +280,7 @@ class ListController extends Controller{
                     $goods = Goods::find()->where(['id' => $c->goods_id])->one();
                     $order_goods->goods_id = $goods->id;
                     //在保存订单信息前判断库存是否足够
-                    if ($goods->stock = $c->amount) {
+                    if ($goods->stock >= $c->amount) {
                         $order_goods->goods_name = $goods->name;
                         $order_goods->logo = $goods->logo;
                         $order_goods->price = $goods->shop_price;
@@ -292,11 +292,11 @@ class ListController extends Controller{
                         $goods->save(false);
                         $order_goods->save(false);
                         $c->delete();
+                    } else {
+                        //库存不足 抛出异常
+                        throw new Exception('商品的数量不足,请修改购物车');
                     }
-                else {
-                    //库存不足 抛出异常
-                    throw new Exception('商品的数量不足,请修改购物车');
-                }
+
                 }
                 //订单金额
                 $order->total=$total_order+Order::$deliveries[$deli_id][1];
@@ -307,6 +307,8 @@ class ListController extends Controller{
             catch(Exception $e){
                     //回滚
                 $tran->rollBack();
+                echo '商品的库存不足,请修改购物车';
+                die;
             }
             }
             return $this->renderPartial('over');
@@ -328,4 +330,21 @@ class ListController extends Controller{
             return $this->render('order-select',['orders'=>$orders]);
         }
     }
+    /**
+     * 商品的搜索
+     */
+    public function actionSearch(){
+        $name=$_GET['goods_name'];
+            //根据商品名模糊得到商品的信息
+            //分页
+            $query=Goods::find();
+            $pager=new Pagination(
+                [
+                    'totalCount'=>$query->count(),
+                    'defaultPageSize'=>4
+                ]
+            );
+            //根据id获取到商品的信息
+            $goods = $query->limit($pager->limit)->offset($pager->offset)->where(['like','name',$name])->all();//基本信息
+        return $this->render('index',['goods'=>$goods,'pager'=>$pager]);}
 }

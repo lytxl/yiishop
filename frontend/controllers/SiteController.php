@@ -107,6 +107,7 @@ class SiteController extends Controller
         }
         return $this->render('register');
     }
+
     /**用户名重复验证*/
     public function actionI($username){
         $result=Member::find()->where(['username'=>$username])->one();
@@ -116,6 +117,7 @@ class SiteController extends Controller
             echo 'true';
         }
     }
+
     /**
      * 用户登录
      */
@@ -160,6 +162,7 @@ class SiteController extends Controller
         }
         return $this->render('login');
     }
+
     /**
      * 用户注销
      */
@@ -167,6 +170,7 @@ class SiteController extends Controller
         Yii::$app->user->logout();
         return $this->redirect('http://yiishop.txlly.top');
     }
+
     /**
      * 添加收货地址
      */
@@ -198,6 +202,7 @@ class SiteController extends Controller
         }
         return $this->render('site');
     }
+
     /**
      * 收货地址首页
      * @return string
@@ -208,6 +213,7 @@ class SiteController extends Controller
             $form=Site::find()->where(['member_id'=>$id])->all();
             return $this->render('site-index',['form'=>$form]);
             }
+
     /**
      * 修改地址
      * @param $id
@@ -239,6 +245,7 @@ class SiteController extends Controller
         }
         return $this->render('site-edit',['form'=>$form,'detail'=>$detailed]);
     }
+
     /**
      * 删除地址
      */
@@ -249,6 +256,7 @@ class SiteController extends Controller
         $detailed->delete();
         echo json_encode($result);
     }
+
     /**
      * 设置默认地址
      */
@@ -266,6 +274,7 @@ class SiteController extends Controller
         $form->save();
         return $this->redirect(['site/site-index']);
     }
+
     /**
      * Logs in a user.
      *
