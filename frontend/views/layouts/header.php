@@ -169,7 +169,6 @@
         }else{
             $('#my_input').prop('disabled','')
         }
-
     });
     $('#search').keyup();
 </script>

@@ -158,7 +158,7 @@
                         <ul>
                             <li>
                                 <span><?=$sum?> 件商品，总商品金额：</span>
-                                <em>￥<?=$money?></em>
+                                <em id="my_em" class_em="<?=$money?>">￥<?=$money?></em>
                             </li>
                             <li>
                                 <span>运费：</span>
@@ -166,7 +166,7 @@
                             </li>
                             <li>
                                 <span>应付总额：</span>
-                                <em>￥<?=$money?></em>
+                                <em id="myy_em"></em>
                             </li>
                         </ul>
                     </td>
@@ -180,7 +180,7 @@
 
     <div class="fillin_ft">
         <input type="submit" value="提交订单"></input>
-        <p>应付总额：<strong>￥<?=$money?>元</strong></p>
+        <p>应付总额：<strong id="my_strong"></strong></p>
 
     </div>
 </form>
@@ -218,6 +218,10 @@
     $('table').on('click','#my_deliveries',function () {
         var money=$(this).attr('class_v');
         $('#em').html(money);
+        var en=$('#my_em').attr('class_em');
+        var sum_ov=parseInt(money)+parseInt(en);
+        $('#my_strong').html('￥'+sum_ov+'元');
+        $('#myy_em').html('￥'+sum_ov);
     })
 </script>
 <!-- 底部版权 end -->
