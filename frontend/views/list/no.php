@@ -22,8 +22,8 @@
 
     <div class="row pad-top text-center">
         <div class="col-md-6 col-md-offset-3 text-center">
-            <h1>　对不起!你还没有添加商品!　</h1>
-            <h3> 请添加或者登陆后查看 </h3>
+            <h1>　对不起!你还没有登录!　</h1>
+            <h3> 请登录查看 </h3>
             <h2>! 谢谢 !</h2>
         </div>
     </div>
@@ -32,7 +32,7 @@
         <div class="col-md-8 col-md-offset-2">
 
             <h3>  </h3>
-            <a href="<?=\yii\helpers\Url::to('http://www.yiishop.com')?>" class="btn btn-primary">点击回首页 </a>
+            <a href="<?=\yii\helpers\Url::to(['site/index'])?>" class="btn btn-primary">点击返回 </a>
             <br/><br/>
         </div>
     </div>

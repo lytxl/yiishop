@@ -12,6 +12,10 @@ class m171220_114644_create_article_table extends Migration
      */
     public function up()
     {
+        $tableOptions = null;
+        if ($this->db->driverName === 'mysql') {
+            $tableOptions = 'CHARACTER SET utf8 COLLATE utf8_general_ci ENGINE=InnoDB';
+        }
         $this->createTable('article', [
             'id' => $this->primaryKey(),
             'name'=>$this->string(50)->notNull()->comment('文章名称'),

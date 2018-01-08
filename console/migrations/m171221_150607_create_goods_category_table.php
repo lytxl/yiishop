@@ -12,6 +12,10 @@ class m171221_150607_create_goods_category_table extends Migration
      */
     public function up()
     {
+        $tableOptions = null;
+        if ($this->db->driverName === 'mysql') {
+            $tableOptions = 'CHARACTER SET utf8 COLLATE utf8_general_ci ENGINE=InnoDB';
+        }
         $this->createTable('goods_category', [
             'id' => $this->primaryKey(),
             'tree'=>$this->integer()->notNull()->comment('树id'),

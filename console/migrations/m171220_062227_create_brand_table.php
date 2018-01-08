@@ -12,6 +12,10 @@ class m171220_062227_create_brand_table extends Migration
      */
     public function up()
     {
+        $tableOptions = null;
+        if ($this->db->driverName === 'mysql') {
+            $tableOptions = 'CHARACTER SET utf8 COLLATE utf8_general_ci ENGINE=InnoDB';
+        }
         $this->createTable('brand', [
             'id' => $this->primaryKey()->notNull(),
             'name'=>$this->string(25)->notNull()->comment('品牌名'),

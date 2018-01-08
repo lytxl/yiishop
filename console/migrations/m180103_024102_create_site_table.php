@@ -12,6 +12,10 @@ class m180103_024102_create_site_table extends Migration
      */
     public function up()
     {
+        $tableOptions = null;
+        if ($this->db->driverName === 'mysql') {
+            $tableOptions = 'CHARACTER SET utf8 COLLATE utf8_general_ci ENGINE=InnoDB';
+        }
         $this->createTable('site', [
             'id' => $this->primaryKey(),
             'username'=>$this->string(15)->notNull()->comment('收货人姓名'),

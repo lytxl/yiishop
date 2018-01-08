@@ -79,7 +79,7 @@
                     <div class="uclist mt10">
                         <ul class="list1 fl">
                             <li><a href="">用户信息></a></li>
-                            <li><a href="">我的订单></a></li>
+                            <li><a href="<?=\yii\helpers\Url::to(['list/order-select'])?>">我的订单></a></li>
                             <li><a href="<?=Yii::$app->user->isGuest?\yii\helpers\Url::to(['site/member-login']):\yii\helpers\Url::to(['site/site-index','id'=>Yii::$app->user->identity->getId()])?>">收货地址></a></li>
                             <li><a href="">我的收藏></a></li>
                         </ul>
@@ -115,7 +115,7 @@
                 </dt>
                 <dd>
                     <div class="prompt">
-                        购物车中还没有商品，赶紧选购吧！
+
                     </div>
                 </dd>
             </dl>

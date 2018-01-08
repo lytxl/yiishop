@@ -12,6 +12,10 @@ class m171223_123101_create_goods_table extends Migration
      */
     public function up()
     {
+        $tableOptions = null;
+        if ($this->db->driverName === 'mysql') {
+            $tableOptions = 'CHARACTER SET utf8 COLLATE utf8_general_ci ENGINE=InnoDB';
+        }
         $this->createTable('goods', [
             'id' => $this->primaryKey(),
             'name'=>$this->char(20)->notNull()->comment('商品名'),

@@ -6,10 +6,16 @@ use backend\models\GoodsCategory;
 use backend\models\GoodsGallery;
 use backend\models\GoodsInto;
 use frontend\models\Cart;
+use frontend\models\Order;
+use frontend\models\OrderGoods;
+use frontend\models\Site;
+use frontend\models\SiteDeta;
 use yii\data\Pagination;
+use yii\db\Exception;
 use yii\helpers\ArrayHelper;
 use yii\web\Controller;
 use yii\web\Cookie;
+use yii\web\Request;
 
 class ListController extends Controller{
     public $enableCsrfValidation=false;
@@ -66,7 +72,6 @@ class ListController extends Controller{
             }else{
                 $cart=[];
             }
-
             //判断购物中是否存在好商品,存在就数量累加,不存在添加
             if(array_key_exists($goods_id,$cart)){
                 $cart[$goods_id]+=$amount;
@@ -108,9 +113,6 @@ class ListController extends Controller{
                 //取出存在cookie里面的键
                 $ids=array_keys($cart);
             }
-//            if(!$cart){
-//                return $this->renderPartial('no');
-//            }
         }
         else {
             //根据当前登录的用户的id获取数据
@@ -122,7 +124,7 @@ class ListController extends Controller{
                 $cart[$ca->goods_id]=$ca->amount;
             }
             if(!$carts){
-                return $this->renderPartial('no');
+                echo '你的购物车还没有商品!';die;
             }
             }
         //根据cookie里面的id等到商品的所有有信息
@@ -190,6 +192,141 @@ class ListController extends Controller{
             $goods->amount=$amount;
             $goods->save();
             var_dump($goods->amount);
+        }
+    }
+    //确定订单信息
+    public function actionClose(){
+        //判断用符是否登录
+        if(\Yii::$app->user->isGuest){
+            //未登录
+            return $this->renderPartial('no');
+        }else{
+            //根据第获取到id等到商品的数据
+            $id=$_GET['id'];
+            $cart=Cart::find()->where(['member_id'=>$id])->all();
+            $ids=[];
+            foreach($cart as $ca){
+                $ids[]=$ca->goods_id;
+                $amount[$ca->goods_id]=$ca->amount;
+            }
+            //获取商品的所有信息
+            $goods=Goods::find()->where(['in','id',$ids])->all();
+            //得到收货人的信息
+            $site=Site::find()->where(['member_id'=>$id])->all();
+            //根据收货人的信息等到详细地址
+            $site_id=[];
+            foreach($site as $s){
+                $site_id[]=$s->id;
+            }
+            $site_deta=SiteDeta::find()->where(['in','site_id',$site_id])->all();
+            $deta=[];
+            foreach ($site_deta as $s){
+             $deta[$s->site_id]=$s->detailed;
+            }
+            //得到总商品和总金额
+            $money='';
+            $sum='';
+            foreach($goods as $good){
+                $money+=$good->shop_price*$amount[$good->id];
+                $sum+=$amount[$good->id];
+            }
+            return $this->renderPartial('order',['goods'=>$goods,'amount'=>$amount,'site'=>$site,'deta'=>$deta,'money'=>$money,'sum'=>$sum]);
+        }
+    }
+    //提交订单
+    public function actionOrder(){
+        $request=\Yii::$app->request;
+        if($request->isPost){
+            $deli_id=$request->post('delivery_id');
+            $pay_id=$request->post('pay_id');
+            $order=new Order();
+            $order->load($request->post(),'');
+            //根据提交过来的地址id得到详细的地址
+            $address=Site::find()->where(['id'=>$order->address_id])->one();
+            //根据地址id获取地址详细
+            $site_deta=SiteDeta::find()->where(['site_id'=>$address->id])->one();
+            $order->name=$address->username;
+            $order->province=$address->cmbProvince;
+            $order->city=$address->cmbCity;
+            $order->area=$address->cmbArea;
+            $order->tel=$address->cel;
+            $order->address=$site_deta->detailed;
+            //派送方式
+            $order->delivery=$deli_id;
+            $order->delivery_name=Order::$deliveries[$deli_id][0];
+            $order->delivery_price=Order::$deliveries[$deli_id][1];
+            //支付方式
+            $order->payment_id=$pay_id;
+            $order->payment_name=Order::$deal[$pay_id][0];
+            //状态
+            $order->status=1;
+            //创建时间
+            $order->create_time=time();
+            //登录人的id
+            $member_id=\Yii::$app->user->identity->getId();
+            $order->member_id=$member_id;
+          //  开启事务
+            $tran=\Yii::$app->db->beginTransaction();
+            try {
+                //保存订单信息
+                if ($order->validate()) {
+                    $order->save(false);
+                }
+                $carts = Cart::find()->where(['member_id' => $member_id])->all();
+                //用个变量保存订单金额
+                $total_order=0;
+                foreach ($carts as $c) {
+                    $order_goods = new OrderGoods();
+                    $order_goods->order_id = $order->id;
+                    $goods = Goods::find()->where(['id' => $c->goods_id])->one();
+                    $order_goods->goods_id = $goods->id;
+                    //在保存订单信息前判断库存是否足够
+                    if ($goods->stock = $c->amount) {
+                        $order_goods->goods_name = $goods->name;
+                        $order_goods->logo = $goods->logo;
+                        $order_goods->price = $goods->shop_price;
+                        $order_goods->amount = $c->amount;
+                        $order_goods->total = $goods->shop_price * $c->amount;
+                        $goods->stock -= $c->amount;
+                        $total_order +=$goods->shop_price * $c->amount;
+                        //清空购物车
+                        $goods->save(false);
+                        $order_goods->save(false);
+                        $c->delete();
+                    }
+                else {
+                    //库存不足 抛出异常
+                    throw new Exception('商品的数量不足,请修改购物车');
+                }
+                }
+                //订单金额
+                $order->total=$total_order+Order::$deliveries[$deli_id][1];
+                $order->save(false);
+            //添加事务
+                $tran->commit();
+            }
+            catch(Exception $e){
+                    //回滚
+                $tran->rollBack();
+            }
+            }
+            return $this->renderPartial('over');
+        }
+    //订单详情
+    public function actionOrderSelect(){
+        //判断用户是否登录
+        if(\Yii::$app->user->isGuest){
+            return $this->renderPartial('no');
+        }
+        else{
+        //根据当期登录用户获取到订单详情
+            $id=\Yii::$app->user->identity->getId();
+            $orders=Order::find()->where(['member_id'=>$id])->all();
+            $ids=[];
+            foreach($orders as $order){
+                $ids[]=$order->id;
+            }
+            return $this->render('order-select',['orders'=>$orders]);
         }
     }
 }

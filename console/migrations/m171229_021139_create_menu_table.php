@@ -12,6 +12,10 @@ class m171229_021139_create_menu_table extends Migration
      */
     public function up()
     {
+        $tableOptions = null;
+        if ($this->db->driverName === 'mysql') {
+            $tableOptions = 'CHARACTER SET utf8 COLLATE utf8_general_ci ENGINE=InnoDB';
+        }
         $this->createTable('menu', [
             'id' => $this->primaryKey(),
             'name'=>$this->char(20)->notNull()->comment('菜单名'),

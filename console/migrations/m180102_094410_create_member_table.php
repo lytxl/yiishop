@@ -12,6 +12,10 @@ class m180102_094410_create_member_table extends Migration
      */
     public function up()
     {
+        $tableOptions = null;
+        if ($this->db->driverName === 'mysql') {
+            $tableOptions = 'CHARACTER SET utf8 COLLATE utf8_general_ci ENGINE=InnoDB';
+        }
         $this->createTable('member', [
             'id' => $this->primaryKey(),
             'username'=>$this->string(50)->notNull()->comment('用户名'),
