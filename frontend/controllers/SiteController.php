@@ -152,7 +152,7 @@ class SiteController extends Controller
                     $ids = Cart::find()->where(['member_id' => $id])->all();
 
                 }
-               return $this->redirect('http://www.yiishop.com');
+               return $this->redirect('http://yiishop.txlly.top');
            }
            else{
              echo '登录失败'; die;
@@ -165,7 +165,7 @@ class SiteController extends Controller
      */
     public function actionMemberCancel(){
         Yii::$app->user->logout();
-        return $this->redirect('http://www.yiishop.com');
+        return $this->redirect('http://yiishop.txlly.top');
     }
     /**
      * 添加收货地址

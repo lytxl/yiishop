@@ -3,7 +3,7 @@ namespace backend\models;
 
 use yii\db\ActiveRecord;
 
-class Article_detail extends ActiveRecord{
+class ArticleDetail extends ActiveRecord{
     public function rules()
     {
         return [

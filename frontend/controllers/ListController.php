@@ -191,7 +191,6 @@ class ListController extends Controller{
             var_dump($goods->amount);
             $goods->amount=$amount;
             $goods->save();
-            var_dump($goods->amount);
         }
     }
     //确定订单信息

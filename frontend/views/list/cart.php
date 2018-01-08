@@ -73,7 +73,7 @@
         </tfoot>
     </table>
     <div class="cart_btn w990 bc mt10">
-        <a href="<?=\yii\helpers\Url::to('http://www.yiishop.com/')?>" class="continue">继续购物</a>
+        <a href="<?=\yii\helpers\Url::to('http://yiishop.txlly.top/')?>" class="continue">继续购物</a>
         <a href="<?=Yii::$app->user->isGuest?\yii\helpers\Url::to(['site/member-login']):\yii\helpers\Url::to(['list/close','id'=>Yii::$app->user->identity->getId()])?>" class="checkout">结 算</a>
     </div>
 </div>

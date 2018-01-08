@@ -20,13 +20,13 @@
             </td>
             <td>
             <?= \yii\helpers\Html::button('删除',['class'=>'btn btn-primary','id'=>$r->id])?>
-            <?= \yii\helpers\Html::a('修改',['article_category/edit','id'=>$r->id],['class'=>'btn btn-info'])?>
+            <?= \yii\helpers\Html::a('修改',['article-category/edit','id'=>$r->id],['class'=>'btn btn-info'])?>
             </td>
         </tr>
     <?php endforeach;?>
     <tr>
         <td colspan="7" style="text-align: center">
-            <?=\yii\helpers\Html::a('添加',['article_category/add'],['class'=>'btn btn-info'])?>
+            <?=\yii\helpers\Html::a('添加',['article-category/add'],['class'=>'btn btn-info'])?>
         </td>
     </tr>
 </table>
@@ -34,7 +34,7 @@
 /**
  * @var $this yii\web\View
  */
-$url=\yii\helpers\Url::to(['article_category/delete']);
+$url=\yii\helpers\Url::to(['article-category/delete']);
 $js=<<<JS
         $('tr').on('click','.btn-primary',function() {
           var id=$(this).attr('id');

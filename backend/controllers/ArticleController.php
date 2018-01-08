@@ -5,6 +5,8 @@ use backend\filters\RbacFilters;
 use backend\models\Article;
 use backend\models\Article_category;
 use backend\models\Article_detail;
+use backend\models\ArticleCategory;
+use backend\models\ArticleDetail;
 use yii\web\Controller;
 use yii\web\Request;
 
@@ -13,7 +15,7 @@ class ArticleController extends Controller{
     public function actionIndex(){
         //获取数据显示页面
         $forms=Article::find()->where(['>=','status',0])->all();
-        $article_category=Article_category::find()->all();
+        $article_category=ArticleCategory::find()->all();
         $val=[];
         foreach ($article_category as $a){
             $val[$a->id]=$a->name;
@@ -23,9 +25,9 @@ class ArticleController extends Controller{
     //添加
     public function actionAdd(){
         $model=new Article();
-        $content=new Article_detail();
+        $content=new ArticleDetail();
         $request = new Request();
-        $article_category=Article_category::find()->all();
+        $article_category=ArticleCategory::find()->all();
         $val=[];
         foreach ($article_category as $a){
             $val[$a->id]=$a->name;
@@ -51,8 +53,8 @@ class ArticleController extends Controller{
     //修改
     public function actionEdit($id){
         $model=Article::findOne(['id'=>$id]);
-        $content=Article_detail::findOne(['article_id'=>$id]);
-        $article_category=Article_category::find()->all();
+        $content=ArticleDetail::findOne(['article_id'=>$id]);
+        $article_category=ArticleCategory::find()->all();
         $val=[];
         foreach ($article_category as $a){
             $val[$a->id]=$a->name;
