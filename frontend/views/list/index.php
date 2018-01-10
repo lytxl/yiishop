@@ -298,7 +298,7 @@
                 <?php foreach($goods as $good):?>
                 <li>
                     <dl>
-                        <dt><a href="<?=\yii\helpers\Url::to(['@web/goods_'.$good->id.'.html'])?>"><img src="<?=$good->logo?>" alt="" /></a></dt>
+                        <dt><a href="<?=\yii\helpers\Url::to(['@web/goods_'.$good->id.'.html'])?>"><img src="<?=$good->logo?>"/></a></dt>
                         <dd><a href="<?=\yii\helpers\Url::to(['list/part'])?>?id=<?=$good->id?>"><?=$good->name?></a></dt>
                         <dd><strong><?= $good->market_price?></strong></dt>
                         <dd><a href=""><em>已有10人评价</em></a></dt>
