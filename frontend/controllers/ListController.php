@@ -41,13 +41,13 @@ class ListController extends Controller{
         );
         //根据id获取到商品的信息
         $goods = $query->limit($pager->limit)->offset($pager->offset)->where(['in','goods_category_id',$ids])->all();//基本信息
-        return $this->render('index',['goods'=>$goods,'pager'=>$pager]);
+        return  $this->render('index',['goods'=>$goods,'pager'=>$pager]);
     }
     //goods->particulars
     public function actionPart($id){
             //根据id获取到商品的信息
             $goods=Goods::find()->where(['id'=>$id])->one();//基本信息
-        //给上平的浏览次加一
+        //给商品的浏览次数加一
             $goods->view_times=$goods->view_times+1;
             $goods->save();
 //            Goods::updateAllCounters(['view_times'=>1],['id'=>$id]);
@@ -57,6 +57,7 @@ class ListController extends Controller{
             //第一张图片
             $img_one=$img[0]->path;
         return $this->render('part',['goods'=>$goods,'form'=>$form,'imgs'=>$img,'img_one'=>$img_one]);
+
     }
     //购物商品添加到cookie里面
     public function actionAddToCart($goods_id,$amount){
@@ -240,6 +241,11 @@ class ListController extends Controller{
             $pay_id=$request->post('pay_id');
             $order=new Order();
             $order->load($request->post(),'');
+            //判断是否有收获地址
+            if(!$order->address_id){
+                echo '请你却认收货地址,如果没有请添加';
+                die;
+            }
             //根据提交过来的地址id得到详细的地址
             $address=Site::find()->where(['id'=>$order->address_id])->one();
             //根据地址id获取地址详细

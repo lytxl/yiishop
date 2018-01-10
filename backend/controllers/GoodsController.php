@@ -1,6 +1,5 @@
 <?php
 namespace backend\controllers;
-
 use backend\filters\RbacFilters;
 use backend\models\Brand;
 use backend\models\Goods;
@@ -15,7 +14,6 @@ use yii\helpers\Json;
 use yii\web\Controller;
 use yii\web\Request;
 use yii\web\UploadedFile;
-
 class GoodsController extends Controller{
     public $enableCsrfValidation=false;
     //首页显示
@@ -53,7 +51,7 @@ class GoodsController extends Controller{
             $f[$goods->id]=$goods->name;
         }
         return $this->render('index',['form'=>$form,'v'=>$v,'f'=>$f
-        ,'pager'=>$pager]);
+            ,'pager'=>$pager]);
     }
     //添加
     public function actionAdd(){
@@ -63,29 +61,41 @@ class GoodsController extends Controller{
         //详情表
         $content=new GoodsInto();
         if ($request->isPost){
-                $model->load($request->post());
-                $content->load($request->post());
-                if($model->validate() && $content->validate()){
-                    $time=date('Y-m-d',time());
-                    $count=GoodsDayCount::find()->where(['day'=>$time])->one();
-                    //判断是添加还是修改
-                    if($count){
-                        $count->count+=1;
-                    }else{
-                        $count=new GoodsDayCount();
-                        $count->day=$time;
-                        $count->count=1;
-                    }
-                    $count->save();
-                    //获取时间
-                    $model->create_time=time();
-                    $model->sn=date('Ymd').str_pad($count->count,4,0,0);
-                    $model->save();
-                    $content->goods_id=$model->id;
-                    $content->save();
-                    \Yii::$app->session->setFlash('success','添加成功');
-                    return $this->redirect(['goods/index']);
+            $model->load($request->post());
+            $content->load($request->post());
+            if($model->validate() && $content->validate()){
+                $time=date('Y-m-d',time());
+                $count=GoodsDayCount::find()->where(['day'=>$time])->one();
+                //判断是添加还是修改
+                if($count){
+                    $count->count+=1;
+                }else{
+                    $count=new GoodsDayCount();
+                    $count->day=$time;
+                    $count->count=1;
                 }
+                $count->save();
+                //获取时间
+                $model->create_time=time();
+                $model->sn=date('Ymd').str_pad($count->count,4,0,0);
+                $rows= $model->save();
+                $content->goods_id=$model->id;
+                $content->save();
+                //==============页面静态化==============
+//                if($rows){
+//                    //根据id获取到商品的信息
+//                    $goods=Goods::find()->where(['id'=>$model->id])->one();//基本信息
+//                    $form=GoodsInto::find()->where(['goods_id'=>$model->id])->one();//根据获得的商品id等到详情
+//                    //根据图片获取到商品id
+//                    $img=GoodsGallery::find()->where(['goods_id'=>$model->id])->all();
+//                    //第一张图片
+//                    $img_one=$img[0]->path;
+//                    $contents= $this->renderPartial('part',['goods'=>$goods,'form'=>$form,'imgs'=>$img,'img_one'=>$img_one]);
+//                    file_put_contents(\Yii::getAlias('@frontend/web').'/goods_'.$model->id.'.html',$contents);
+//                }
+                \Yii::$app->session->setFlash('success','添加成功');
+                return $this->redirect(['goods/index']);
+            }
         }else{
             $barend=Brand::find()->all();
             $v=[];
@@ -106,8 +116,20 @@ class GoodsController extends Controller{
             $model->load($request->post());
             $content->load($request->post());
             if($model->validate() && $content->validate()){
-                $model->save();
+                $rows=$model->save();
                 $content->save();
+                //==============页面静态化==============
+                if($rows){
+                    //根据id获取到商品的信息
+                    $goods=Goods::find()->where(['id'=>$id])->one();//基本信息
+                    $form=GoodsInto::find()->where(['goods_id'=>$id])->one();//根据获得的商品id等到详情
+                    //根据图片获取到商品id
+                    $img=GoodsGallery::find()->where(['goods_id'=>$id])->all();
+                    //第一张图片
+                    $img_one=$img[0]->path;
+                   $contents= $this->renderPartial('part',['goods'=>$goods,'form'=>$form,'imgs'=>$img,'img_one'=>$img_one]);
+                   file_put_contents(\Yii::getAlias('@frontend/web').'/goods_'.$id.'.html',$contents);
+                }
                 \Yii::$app->session->setFlash('success','修改成功');
                 return $this->redirect(['goods/index']);
             }
@@ -127,16 +149,15 @@ class GoodsController extends Controller{
     }
     //保存图片
     public function actionGalleryAdd(){
-     $re=\Yii::$app->request;
-     if($re->isPost){
-         $gallery=new GoodsGallery();
-         $gallery->goods_id=$re->post('id');
-         $gallery->path=$re->post('resu');
-         $gallery->save();
-        $id= \Yii::$app->db->getLastInsertID();
-        return Json::encode(['id'=>$id]);
-     }
-
+        $re=\Yii::$app->request;
+        if($re->isPost){
+            $gallery=new GoodsGallery();
+            $gallery->goods_id=$re->post('id');
+            $gallery->path=$re->post('resu');
+            $gallery->save();
+            $id= \Yii::$app->db->getLastInsertID();
+            return Json::encode(['id'=>$id]);
+        }
     }
     //相册删除
     public function actionGalleryDelete($id){
@@ -196,7 +217,7 @@ class GoodsController extends Controller{
                 'config'=>[
                     //上传图片配置
                     'imageUrlPrefix' => "http://admin.yiishop.com", /* 图片访问路径前缀 */
-                   /* 'imagePathFormat' => "/image/{yyyy}{mm}{dd}/{time}{rand:6}", /* 上传保存路径,可以自定义保存路径和文件名格式 */
+                    /* 'imagePathFormat' => "/image/{yyyy}{mm}{dd}/{time}{rand:6}", /* 上传保存路径,可以自定义保存路径和文件名格式 */
                 ]
             ]
         ];

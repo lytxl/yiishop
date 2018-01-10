@@ -116,7 +116,7 @@
                 <table>
                     <?php foreach (\frontend\models\Order::$deal as $id=>$de):?>
                     <tr <?=$id==1?'class="cur"':''?>>
-                        <td class="col1"><input type="radio" name="pay_id" value="<?=$id?>" /><?=$de[0]?></td>
+                        <td class="col1"><input type="radio" name="pay_id" <?=$id==1?'checked="checked"':''?> value="<?=$id?>" /><?=$de[0]?></td>
                         <td class="col2"><?=$de[1]?></td>
                     </tr>
                     <?php endforeach;?>
@@ -162,10 +162,10 @@
                             </li>
                             <li>
                                 <span>运费：</span>
-                                <em id="em">￥10.00</em>
+                                <em id="em">￥25.00</em>
                             </li>
                             <li>
-                                <span>应付总额：</span>
+                                <span>应付总额:</span>
                                 <em id="myy_em"></em>
                             </li>
                         </ul>
@@ -222,7 +222,7 @@
         var sum_ov=parseInt(money)+parseInt(en);
         $('#my_strong').html('￥'+sum_ov+'元');
         $('#myy_em').html('￥'+sum_ov);
-    })
+    });
 </script>
 <!-- 底部版权 end -->
 </body>

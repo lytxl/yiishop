@@ -84,7 +84,28 @@ class SiteController extends Controller
      */
     public function actionIndex()
     {
-        return $this->render('index');
+        //使用ob缓存
+       $contents=$this->render('index');
+       file_put_contents('index.html',$contents);
+       return $this->renderPartial('@webroot/index.html');
+    }
+
+    /**
+     * 获取用户登录的信息
+     */
+    public function actionUserStatus(){
+        if(Yii::$app->user->isGuest){
+            $result=[
+                'is_login'=>false,
+                'username'=>null
+            ];
+        }else{
+            $result=[
+                'is_login'=>true,
+                'username'=>Yii::$app->user->identity->username
+            ];
+        }
+        echo json_encode($result);
     }
 
     /**
@@ -108,7 +129,10 @@ class SiteController extends Controller
         return $this->render('register');
     }
 
-    /**用户名重复验证*/
+    /**
+     * 用户名重复验证
+     * @param $username
+     */
     public function actionI($username){
         $result=Member::find()->where(['username'=>$username])->one();
         if($result){
@@ -154,7 +178,7 @@ class SiteController extends Controller
                     $ids = Cart::find()->where(['member_id' => $id])->all();
 
                 }
-               return $this->redirect('http://yiishop.txlly.top');
+               return $this->redirect('http://www.yiishop.com');
            }
            else{
              echo '登录失败'; die;
@@ -168,7 +192,7 @@ class SiteController extends Controller
      */
     public function actionMemberCancel(){
         Yii::$app->user->logout();
-        return $this->redirect('http://yiishop.txlly.top');
+        return $this->redirect('http://www.yiishop.com');
     }
 
     /**
@@ -411,7 +435,10 @@ class SiteController extends Controller
         ]);
     }
 
-    //短信验证码
+    /**短信验证码
+     * @param $tel
+     * @return string
+     */
     public function actionSms($tel){
         if(preg_match("/^1[34578]\d{9}$/", $tel)){
             $code=rand(100000,999999);
@@ -481,7 +508,13 @@ class SiteController extends Controller
         );*/
 //        var_dump($content);
     }
-    //验证验证码
+
+    /**
+     * 验证验证码
+     * @param $captcha
+     * @param $tel
+     * @return string
+     */
     public function actionVerify($captcha,$tel){
         $redis=new \Redis();
         $redis->connect('127.0.0.1');

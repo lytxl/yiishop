@@ -42,7 +42,7 @@ class Goods extends ActiveRecord{
                 $html.= '<div class="cat_detail">';
                 $result[$category->id]=GoodsCategory::find()->where(['parent_id'=>$category->id])->all();
                 foreach($result[$category->id] as $k2=>$cate){
-                    $html.='<dl'.($k2?'':'class="dl_1st"').'>';
+                    $html.='<dl'.($k2?'':' class="dl_1st"').'>';
                     $html.= '<dt><a href="'.\yii\helpers\Url::to(['list/index','id'=>$cate->id]).'">'.$cate->name.'</a></dt>';
                     $re[$cate->id]=GoodsCategory::find()->where(['parent_id'=>$cate->id])->all();
                     foreach($re[$cate->id] as $ca){

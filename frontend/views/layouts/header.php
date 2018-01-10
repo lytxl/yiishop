@@ -23,7 +23,7 @@
         </div>
         <div class="topnav_right fr">
             <ul>
-                <li><?=isset(Yii::$app->user->identity->username)?(Yii::$app->user->identity->username).'[<a href="/site/member-cancel">注销</a>]':'你好，欢迎来到京西！[<a href="/site/member-login">登录</a>][<a href="/site/register">免费注册</a>]'?>
+                <li id="user_status">
                 </li>
                 <li class="line">|</li>
                 <li>我的订单</li>
@@ -74,8 +74,8 @@
                     <b></b>
                 </dt>
                 <dd>
-                    <div class="prompt">
-                        <?=isset(Yii::$app->user->identity->username)?(Yii::$app->user->identity->username).'[<a href="/site/member-cancel">注销</a>]':'你好，欢迎来到京西！[<a href="/site/member-login">登录</a>][<a href="/site/register">免费注册</a>]'?>
+                    <div class="prompt"  id="my_div">
+
                     </div>
                     <div class="uclist mt10">
                         <ul class="list1 fl">
@@ -171,4 +171,14 @@
         }
     });
     $('#search').keyup();
+    //发送ajax请求获取用户的登录状态
+    $.getJSON("<?=\yii\helpers\Url::to(['site/user-status'])?>",function (json) {
+        if(json.is_login){
+            $('#user_status').html('欢迎【'+json.username+'】登录京西商城[<a href="/site/member-cancel">注销</a>]');
+            $('#my_div').html('欢迎【'+json.username+'】登录京西商城[<a href="/site/member-cancel">注销</a>]')
+        }else{
+            $('#user_status').html('你好，欢迎来到京西！[<a href="/site/member-login">登录</a>][<a href="/site/register">免费注册</a>]');
+            $('#my_div').html('你好，欢迎来到京西！[<a href="/site/member-login">登录</a>][<a href="/site/register">免费注册</a>]');
+        }
+    })
 </script>

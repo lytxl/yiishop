@@ -181,7 +181,6 @@
 <!-- 头部 end-->
 
 <div style="clear:both;"></div>
-<?=$content?>
 <script type="text/javascript">
     $('#search').keyup(function () {
         if($('#search').val()==''){
@@ -202,7 +201,6 @@
         }
     })
 </script>
-<!-- 顶部导航 end -->
 
 
 
