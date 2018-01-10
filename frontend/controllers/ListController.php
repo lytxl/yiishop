@@ -6,6 +6,7 @@ use backend\models\GoodsCategory;
 use backend\models\GoodsGallery;
 use backend\models\GoodsInto;
 use frontend\models\Cart;
+use frontend\models\Member;
 use frontend\models\Order;
 use frontend\models\OrderGoods;
 use frontend\models\Site;
@@ -308,7 +309,14 @@ class ListController extends Controller{
                 $order->total=$total_order+Order::$deliveries[$deli_id][1];
                 $order->save(false);
             //添加事务
+                //根据登录的id获取到拥护email
+                $id=\Yii::$app->user->identity->getId();
+                $member=Member::find()->where(['id'=>$id])->one();
+                $email=$member->email;
+                //发送邮件;
+                ListController::actionEmail($email);
                 $tran->commit();
+
             }
             catch(Exception $e){
                     //回滚
@@ -353,4 +361,15 @@ class ListController extends Controller{
             //根据id获取到商品的信息
             $goods = $query->limit($pager->limit)->offset($pager->offset)->where(['like','name',$name])->all();//基本信息
         return $this->render('index',['goods'=>$goods,'pager'=>$pager]);}
+        /**
+         * 发送邮箱
+         */
+    public static function actionEmail($email){
+        \Yii::$app->mailer->compose()
+             ->setFrom('18381616032@163.com')
+             ->setTo("$email")
+            ->setSubject('京西商城购物订单通知')
+            ->setHtmlBody('<span style="color:red">尊敬的用户你好:</span>你在京西商城的购物订单 已经下单成功,感谢你的惠顾!祝你生活愉快!')
+             ->send();
+    }
 }

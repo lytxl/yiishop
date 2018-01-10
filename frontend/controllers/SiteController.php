@@ -119,8 +119,14 @@ class SiteController extends Controller
             if ($model->validate()){
                 $model->password_hash=Yii::$app->security->generatePasswordHash($model->password_hash);//密码转化为哈希值
                 $model->created_at=time();
-                $model->save(false);
-                return $this->redirect(['site/member-login']);
+                $result = preg_match('/^[\w\-\.]+@[\w\-]+(\.\w+)+$/', $model->email);
+                if($result){
+                    $model->save(false);
+                    return $this->redirect(['site/member-login']);
+                }else{
+                    echo '邮箱请填写正确,否则无法正常添加订单.';
+                    exit;
+                }
             }
             else{
                 var_dump($model->getErrors());die;
@@ -178,7 +184,7 @@ class SiteController extends Controller
                     $ids = Cart::find()->where(['member_id' => $id])->all();
 
                 }
-               return $this->redirect('http://www.yiishop.com');
+               return $this->redirect('http://yiishop.txlly.top');
            }
            else{
              echo '登录失败'; die;
@@ -192,7 +198,7 @@ class SiteController extends Controller
      */
     public function actionMemberCancel(){
         Yii::$app->user->logout();
-        return $this->redirect('http://www.yiishop.com');
+        return $this->redirect('http://yiishop.txlly.top');
     }
 
     /**
