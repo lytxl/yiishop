@@ -78,21 +78,9 @@ class GoodsController extends Controller{
                 //获取时间
                 $model->create_time=time();
                 $model->sn=date('Ymd').str_pad($count->count,4,0,0);
-                $rows= $model->save();
+                $model->save();
                 $content->goods_id=$model->id;
                 $content->save();
-                //==============页面静态化==============
-//                if($rows){
-//                    //根据id获取到商品的信息
-//                    $goods=Goods::find()->where(['id'=>$model->id])->one();//基本信息
-//                    $form=GoodsInto::find()->where(['goods_id'=>$model->id])->one();//根据获得的商品id等到详情
-//                    //根据图片获取到商品id
-//                    $img=GoodsGallery::find()->where(['goods_id'=>$model->id])->all();
-//                    //第一张图片
-//                    $img_one=$img[0]->path;
-//                    $contents= $this->renderPartial('part',['goods'=>$goods,'form'=>$form,'imgs'=>$img,'img_one'=>$img_one]);
-//                    file_put_contents(\Yii::getAlias('@frontend/web').'/goods_'.$model->id.'.html',$contents);
-//                }
                 \Yii::$app->session->setFlash('success','添加成功');
                 return $this->redirect(['goods/index']);
             }
@@ -154,8 +142,20 @@ class GoodsController extends Controller{
             $gallery=new GoodsGallery();
             $gallery->goods_id=$re->post('id');
             $gallery->path=$re->post('resu');
-            $gallery->save();
+            $rows= $gallery->save();
             $id= \Yii::$app->db->getLastInsertID();
+            //==============页面静态化==============
+                if($rows){
+                    //根据id获取到商品的信息
+                    $goods=Goods::find()->where(['id'=>$re->post('id')])->one();//基本信息
+                    $form=GoodsInto::find()->where(['goods_id'=>$re->post('id')])->one();//根据获得的商品id等到详情
+                    //根据图片获取到商品id
+                    $img=GoodsGallery::find()->where(['goods_id'=>$re->post('id')])->all();
+                    //第一张图片
+                    $img_one=$img[0]->path;
+                    $contents= $this->renderPartial('part',['goods'=>$goods,'form'=>$form,'imgs'=>$img,'img_one'=>$img_one]);
+                    file_put_contents(\Yii::getAlias('@frontend/web').'/goods_'.$re->post('id').'.html',$contents);
+                }
             return Json::encode(['id'=>$id]);
         }
     }
